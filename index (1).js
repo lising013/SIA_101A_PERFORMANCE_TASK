@@ -5,7 +5,7 @@
 // It talks to the Product Service to price things.
 // It has NEVER heard of PayMongo — that's the Payment Service's job.
 // ============================================================
-import express from "express";
+import express from "express"; // to import express
 
 const app = express();
 app.use(express.json());
