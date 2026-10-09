@@ -42,7 +42,7 @@ Open `http://localhost:3000`. The API URL defaults to `http://127.0.0.1:8000/api
 
 ### E2E test plan
 
-| ID | Spec | Test name | Author / service owner |
+| ID | Spec | Test name | Author / Rey anthony E. Lising, Marjohn Cleope, Denielle Jon bajao |
 |---|---|---|---|
 | E2E-01 | `cypress/e2e/catalog.cy.js` | shows seeded products with peso prices | Product |
 | E2E-02 | `cypress/e2e/orders.cy.js` | creates a pending-payment order with the correct total | Order |
