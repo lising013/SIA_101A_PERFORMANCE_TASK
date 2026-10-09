@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'The Every Day Shoulder Bag', 'description' => 'A versatile shoulder bag with plenty of room for your daily essentials.', 'category' => 'Accessories', 'price' => 1390, 'image_url' => 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=900&q=85', 'stock' => 11, 'is_featured' => true],
             ['name' => 'Sunday Market Scarf', 'description' => 'A lightweight printed scarf to tie, wrap, or wear your own way.', 'category' => 'Accessories', 'price' => 590, 'image_url' => 'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=900&q=85', 'stock' => 20, 'is_featured' => false],
         ] as $product) {
-            Product::firstOrCreate(['name' => $product['name']], $product);
+            Product::updateOrCreate(['name' => $product['name']], $product);
         }
 
         if (env('ADMIN_EMAIL') && env('ADMIN_PASSWORD')) {

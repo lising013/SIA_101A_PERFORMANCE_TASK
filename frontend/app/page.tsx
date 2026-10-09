@@ -179,7 +179,7 @@ export default function Home() {
         }
       }
       const params = new URLSearchParams(window.location.search);
-      if (active && params.get("payment") === "success") setNotice(`Payment received for order ${params.get("order") || ""}.`);
+      if (active && params.get("payment") === "success") setNotice(`Returned from PayMongo for order ${params.get("order") || ""}. Your payment status will update when confirmed.`);
       if (active && params.get("payment") === "cancelled") setNotice(`Checkout cancelled for order ${params.get("order") || ""}.`);
     })();
     return () => { active = false; };
@@ -474,8 +474,8 @@ export default function Home() {
         </nav>
         <div className="header-actions">
           <button className="icon-action search-toggle" onClick={() => headerSearchOpen ? setHeaderSearchOpen(false) : showHeaderSearch()} aria-label={headerSearchOpen ? "Close search" : "Search"} aria-expanded={headerSearchOpen}><Icon name={headerSearchOpen ? "close" : "search"} /></button>
-          <button className="icon-action account-action" onClick={() => setActiveView("orders")} aria-label="My orders"><Icon name="user" /></button>
-          <button className="bag-button" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><Icon name="bag" /><span>BAG ({cartCount})</span></button>
+          <button className="icon-action account-action" data-cy="orders-button" onClick={() => setActiveView("orders")} aria-label="My orders"><Icon name="user" /></button>
+          <button className="bag-button" data-cy="bag-button" onClick={() => setCartOpen(true)} aria-label={`Shopping bag with ${cartCount} items`}><Icon name="bag" /><span>BAG ({cartCount})</span></button>
           <button className="signout-button" onClick={signOut}>SIGN OUT</button>
         </div>
         {headerSearchOpen && <form className="header-search" onSubmit={(event) => { event.preventDefault(); goToCollection("All"); }} role="search">
@@ -485,7 +485,7 @@ export default function Home() {
         </form>}
       </header>
 
-      {notice && <div className="notice-bar" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss notification"><Icon name="close" /></button></div>}
+      {notice &&       <div className="notice-bar" data-cy="notice" role="status">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss notification"><Icon name="close" /></button></div>}
 
       {activeView === "shop" && (
         <>
@@ -521,17 +521,17 @@ export default function Home() {
             {loading ? <div className="empty-state">Gathering the good stuff…</div> : shownProducts.length ? (
               <div className="product-grid">
                 {shownProducts.map((product, index) => (
-                  <article className="product-card" key={product.id}>
+                  <article className="product-card" data-cy="product-card" key={product.id}>
                     <div className="product-image-wrap">
                       <Image src={product.image_url} alt={product.name} className="product-image" fill unoptimized sizes="(max-width: 680px) 45vw, (max-width: 900px) 30vw, 22vw" />
                       {product.is_featured && <span className="product-tag">{index % 2 === 0 ? "A GOOD ONE" : "STAFF PICK"}</span>}
                       {product.stock < 1 && <span className="sold-out-tag">SOLD OUT</span>}
                       <div className="product-actions">
-                        <button className="quick-add" disabled={!product.stock} onClick={() => addToCart(product)}><span>ADD TO BAG</span><Icon name="plus" /></button>
+                        <button className="quick-add" data-cy="add-to-cart" disabled={!product.stock} onClick={() => addToCart(product)}><span>ADD TO BAG</span><Icon name="plus" /></button>
                         <button className="quick-buy" disabled={!product.stock} onClick={() => buyNow(product)}>BUY NOW <Icon name="arrow" /></button>
                       </div>
                     </div>
-                    <div className="product-meta"><div><p className="product-category">{product.category}</p><h3>{product.name}</h3></div><span className="product-price">{money(product.price)}</span></div>
+                    <div className="product-meta"><div><p className="product-category">{product.category}</p><h3 data-cy="product-name">{product.name}</h3></div><span className="product-price" data-cy="product-price">{money(product.price)}</span></div>
                     <p className="product-description">{product.description}</p>
                   </article>
                 ))}
@@ -620,7 +620,7 @@ export default function Home() {
 
       {activeView === "orders" && (
         <section className="orders-section"><div className="admin-title"><div><p className="eyebrow"><span /> THE GOOD THINGS, EN ROUTE</p><h1>Your <em>orders.</em></h1><p>Everything you have been looking forward to.</p></div><button className="text-button" onClick={() => setActiveView("shop")}>← BACK TO THE SHOP</button></div>
-          {!orders.length ? <div className="empty-state order-empty">No orders just yet. The good stuff is right this way. <button className="text-button" onClick={() => setActiveView("shop")}>SHOP THE COLLECTION →</button></div> : <div className="customer-orders">{orders.map((order) => <article className="customer-order" key={order.id}><div className="customer-order-heading"><div><p className="eyebrow">ORDER {order.order_number}</p><span>{new Date(order.created_at).toLocaleDateString("en-PH", { dateStyle: "medium" })}</span></div><span className={`status-pill status-${order.status}`}>{order.status}</span></div><div className="customer-order-items">{order.items.map((item) => <div key={item.id}>{item.product_name} <span>× {item.quantity}</span></div>)}</div><div className="customer-order-contact"><strong>{order.contact_name}</strong><span>{order.phone_number}</span><span>{order.shipping_address}</span></div><div className="customer-order-total"><span>{order.payment_method === "cash" ? "Cash on delivery" : "Paid online"} · {order.payment_status}</span><strong>{money(order.total)}</strong></div></article>)}</div>}
+          {!orders.length ? <div className="empty-state order-empty">No orders just yet. The good stuff is right this way. <button className="text-button" onClick={() => setActiveView("shop")}>SHOP THE COLLECTION →</button></div> : <div className="customer-orders">{orders.map((order) => <article className="customer-order" key={order.id}><div className="customer-order-heading"><div><p className="eyebrow">ORDER {order.order_number}</p><span>{new Date(order.created_at).toLocaleDateString("en-PH", { dateStyle: "medium" })}</span></div><span className={`status-pill status-${order.status}`}>{order.status}</span></div><div className="customer-order-items">{order.items.map((item) => <div key={item.id}>{item.product_name} <span>× {item.quantity}</span></div>)}</div><div className="customer-order-contact"><strong>{order.contact_name}</strong><span>{order.phone_number}</span><span>{order.shipping_address}</span></div><div className="customer-order-total"><span data-cy="order-payment-status">{order.payment_method === "cash" ? "Cash on delivery" : "Paid online"} · {order.payment_status}</span><strong>{money(order.total)}</strong></div></article>)}</div>}
         </section>
       )}
 
@@ -629,20 +629,20 @@ export default function Home() {
       {cartOpen && <div className="drawer-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setCartOpen(false); }}>
         <aside className="cart-drawer" aria-label="Shopping bag">
           <div className="drawer-heading"><div><p className="eyebrow"><span /> YOUR LITTLE LINEUP</p><h2>Your bag <span>({cartCount})</span></h2></div><button className="icon-action" onClick={() => setCartOpen(false)} aria-label="Close bag"><Icon name="close" /></button></div>
-          {!cart.length ? <div className="cart-empty"><div className="empty-bag"><Icon name="bag" /></div><h3>Room for something lovely.</h3><p>Your bag is having a quiet moment.</p><button className="button button-dark" onClick={() => setCartOpen(false)}>FIND YOUR FAVORITE <Icon name="arrow" /></button></div> : <>
+          {!cart.length ? <div className="cart-empty" data-cy="empty-cart"><div className="empty-bag"><Icon name="bag" /></div><h3>Room for something lovely.</h3><p>Your bag is having a quiet moment.</p><button className="button button-dark" onClick={() => setCartOpen(false)}>FIND YOUR FAVORITE <Icon name="arrow" /></button></div> : <>
             <div className="cart-lines">{cart.map((line) => <div className="cart-line" key={line.product.id}><Image src={line.product.image_url} alt={line.product.name} width={84} height={103} unoptimized /><div className="cart-line-details"><p className="product-category">{line.product.category}</p><h3>{line.product.name}</h3><strong>{money(line.product.price)}</strong><div className="quantity-control"><button onClick={() => changeQuantity(line.product.id, -1)} aria-label="Decrease quantity"><Icon name="minus" /></button><span>{line.quantity}</span><button onClick={() => changeQuantity(line.product.id, 1)} aria-label="Increase quantity"><Icon name="plus" /></button></div></div></div>)}</div>
             <form className="checkout-form" onSubmit={checkout}>
               <p className="field-label checkout-section-label">YOUR PERSONAL INFORMATION</p>
-              <label className="field-label">FULL NAME<input type="text" autoComplete="name" value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder="Name for your delivery" required maxLength={255} /></label>
-              <label className="field-label">PHONE NUMBER<input type="tel" autoComplete="tel" inputMode="tel" pattern="[+0-9().\-\s]{7,30}" value={phoneNumber} onChange={(event) => setPhoneNumber(event.target.value)} placeholder="+63 9XX XXX XXXX" required maxLength={30} /></label>
-              <label className="field-label">DELIVERY ADDRESS<textarea autoComplete="street-address" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="House number, street, barangay, city" required rows={2} maxLength={2000} /></label>
+              <label className="field-label">FULL NAME<input data-cy="checkout-name" type="text" autoComplete="name" value={contactName} onChange={(event) => setContactName(event.target.value)} placeholder="Name for your delivery" required maxLength={255} /></label>
+              <label className="field-label">PHONE NUMBER<input data-cy="checkout-phone" type="tel" autoComplete="tel" inputMode="tel" pattern="[+0-9().\-\s]{7,30}" value={phoneNumber} onChange={(event) => setPhoneNumber(event.target.value)} placeholder="+63 9XX XXX XXXX" required maxLength={30} /></label>
+              <label className="field-label">DELIVERY ADDRESS<textarea data-cy="checkout-address" autoComplete="street-address" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="House number, street, barangay, city" required rows={2} maxLength={2000} /></label>
               <p className="field-label">HOW WOULD YOU LIKE TO PAY?</p>
               <div className="payment-choices">
                 <button type="button" className={paymentMethod === "paymongo" ? "payment-choice chosen" : "payment-choice"} onClick={() => setPaymentMethod("paymongo")}><span className="choice-radio" /> Pay online <small>Card · GCash · Maya</small></button>
-                <button type="button" className={paymentMethod === "cash" ? "payment-choice chosen" : "payment-choice"} onClick={() => setPaymentMethod("cash")}><span className="choice-radio" /> Cash on delivery</button>
+                <button type="button" data-cy="pay-cash" className={paymentMethod === "cash" ? "payment-choice chosen" : "payment-choice"} onClick={() => setPaymentMethod("cash")}><span className="choice-radio" /> Cash on delivery</button>
               </div>
               <div className="subtotal-row"><span>SUBTOTAL</span><strong>{money(subtotal)}</strong></div>
-              <button className="button button-dark checkout-button" disabled={busy}>{busy ? "GETTING IT READY…" : paymentMethod === "paymongo" ? "CONTINUE TO SECURE PAYMENT" : "PLACE MY ORDER"} <Icon name="arrow" /></button>
+              <button className="button button-dark checkout-button" data-cy="checkout-button" disabled={busy}>{busy ? "GETTING IT READY…" : paymentMethod === "paymongo" ? "CONTINUE TO SECURE PAYMENT" : "PLACE MY ORDER"} <Icon name="arrow" /></button>
               {paymentMethod === "paymongo" && <p className="payment-note">You will finish payment on PayMongo’s secure checkout.</p>}
             </form>
           </>}
